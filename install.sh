@@ -232,7 +232,7 @@ install -d -m 700 "$BASE_DIR" "$BASE_DIR/scripts" "$BASE_DIR/config" "$BASE_DIR/
   "$BASE_DIR/reports/monthly" "$BASE_DIR/audits" "$BASE_DIR/audits/quality" "$BASE_DIR/audits/security" \
   "$BASE_DIR/audits/duplication" "$BASE_DIR/audits/updates" "$BASE_DIR/proposals" \
   "$BASE_DIR/proposals/pending" "$BASE_DIR/proposals/approved" "$BASE_DIR/proposals/rejected" \
-  "$BASE_DIR/logs" "$BASE_DIR/backups" "$CONFIG_DIR" "$DATA_DIR"
+  "$BASE_DIR/logs" "$BASE_DIR/backups" "$STATE_DIR" "$CONFIG_DIR" "$DATA_DIR"
 ok "数据目录就绪（0700）"
 
 step "7. 同步管线脚本与规则"
@@ -331,8 +331,19 @@ if (( WITH_EXAMPLES )); then
   ok "示例审计摘要与周报已复制"
 fi
 
+step "12. 修正属主"
+if [[ $EUID -eq 0 && "$RUN_USER" != "root" ]]; then
+  chown -R "$RUN_USER":"$RUN_USER" "$BASE_DIR" "$STATE_DIR"
+  case "$VENV_DIR" in
+    "$REPO_DIR"/*) chown -R "$RUN_USER":"$RUN_USER" "$VENV_DIR" ;;
+  esac
+  ok "数据目录与仓库内 venv 属主: $RUN_USER"
+else
+  note "运行用户为 $RUN_USER，无需调整属主"
+fi
+
 if (( WITH_SYSTEMD )); then
-  step "12. systemd 单元"
+  step "13. systemd 单元"
   UNIT="/etc/systemd/system/$SERVICE_NAME.service"
   render_template "$DASHBOARD_DIR/deploy/hermes-skill-dashboard.service.in" "$UNIT"
   chmod 644 "$UNIT"
@@ -346,7 +357,7 @@ if (( WITH_SYSTEMD )); then
     warn "服务未处于 active；查看: journalctl -u $SERVICE_NAME -n 50"
   fi
 else
-  step "12. systemd 单元（已跳过）"
+  step "13. systemd 单元（已跳过）"
   note "未安装服务；可手动运行: cd $REPO_DIR/dashboard && PORT=$PORT ./run.sh"
 fi
 

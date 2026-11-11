@@ -34,12 +34,14 @@ sudo bash install.sh
 `install.sh` 会做这些事：
 
 1. 检查 systemd、git、python3-venv、python3-yaml、8000 端口与 `~/.hermes/skills`；
-2. 创建数据目录（`0700`）：`~/.hermes/skill-management`、`~/.hermes/skill-dashboard-data`；
+2. 创建数据目录（`0700`）：`~/.hermes/skill-management`、`~/.hermes/skill-dashboard-data`，属主改为运行用户；
 3. 复制管线配置（已存在则跳过，`--force-config` 才覆盖）；
 4. 创建仓库根目录的 `.venv` 并安装 `dashboard/requirements.txt`；
 5. 渲染 systemd 单元（用户名、Home、仓库路径、端口），`daemon-reload` 后 `enable --now`；
 6. 默认执行一次盘点（`--no-scan` 跳过）；
 7. 打印访问地址、日志命令与首次设置密码提示。
+
+完整的按步骤部署流程（含 Windows/WSL 准备、验收与排障）见 [部署操作手册](DEPLOYMENT.md)。
 
 ### 可选参数
 

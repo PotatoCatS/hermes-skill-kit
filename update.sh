@@ -344,8 +344,19 @@ else
   note "已指定 --no-scan，跳过盘点"
 fi
 
+step "11. 修正属主"
+if [[ $EUID -eq 0 && "$RUN_USER" != "root" ]]; then
+  chown -R "$RUN_USER":"$RUN_USER" "$BASE_DIR" "$STATE_DIR"
+  case "$VENV_DIR" in
+    "$REPO_DIR"/*) chown -R "$RUN_USER":"$RUN_USER" "$VENV_DIR" ;;
+  esac
+  ok "数据目录与仓库内 venv 属主: $RUN_USER"
+else
+  note "运行用户为 $RUN_USER，无需调整属主"
+fi
+
 if [[ -f "$UNIT" ]]; then
-  step "11. systemd 单元"
+  step "12. systemd 单元"
   install -d -m 700 "$BACKUP_DIR"
   cp -a "$UNIT" "$BACKUP_DIR/$SERVICE_NAME.service.$(date +%Y%m%d%H%M%S)"
   ok "旧单元已备份到 $BACKUP_DIR"
@@ -366,7 +377,7 @@ if [[ -f "$UNIT" ]]; then
     note "已指定 --no-restart，服务未重启"
   fi
 else
-  step "11. systemd 单元（无单元，跳过）"
+  step "12. systemd 单元（无单元，跳过）"
   note "手动运行: cd $REPO_DIR/dashboard && PORT=$PORT ./run.sh"
 fi
 

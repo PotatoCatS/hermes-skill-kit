@@ -70,6 +70,7 @@ sudo bash uninstall.sh --purge         # 连数据一起删除（会二次确认
 
 ## 文档
 
+- [新机部署操作手册](docs/DEPLOYMENT.md)
 - [安装与首次配置](docs/INSTALL.md)
 - [日常操作：扫描、审计、提案、回滚](docs/OPERATIONS.md)
 - [安全边界与数据卫生](docs/SECURITY.md)
