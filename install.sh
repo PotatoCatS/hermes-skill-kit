@@ -12,7 +12,7 @@ REPO_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 DASHBOARD_DIR="$REPO_DIR/dashboard"
 PIPELINE_DIR="$REPO_DIR/pipeline"
 VENV_DIR="${SKD_VENV:-$REPO_DIR/.venv}"
-SERVICE_NAME="hermes-skill-dashboard"
+SERVICE_NAME="${SKD_SERVICE_NAME:-hermes-skill-dashboard}"
 
 DO_CHECK=0
 DO_SCAN=1

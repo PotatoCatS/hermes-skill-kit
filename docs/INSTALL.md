@@ -76,25 +76,38 @@ curl -sS http://127.0.0.1:8000/api/health
 journalctl -u hermes-skill-dashboard -n 50 --no-pager
 ```
 
-预期：服务为 `active (running)`，健康检查返回 `{"ok": true}`，日志里没有 traceback。
+预期：服务为 `active (running)`，健康检查返回 `{"status": "ok", ...}`，日志里没有 traceback。
 
 ## 5. 更新
 
 ```bash
 cd ~/.hermes/skill-kit
-sudo bash update.sh
+sudo bash update.sh --pull     # 先 git pull --ff-only，再同步
 ```
 
-只更新代码与 `pipeline/scripts`，不会覆盖数据目录里的配置与报告。更新脚本在重启失败时会打印回滚到上一个 tag 的命令。
+`update.sh` 会：
+
+1. 从现有 systemd 单元读回用户、端口、venv 与数据目录（不会把 `sudo` 更新改回默认值）；
+2. 把 `pipeline/scripts/*.py` 覆盖到数据目录，覆盖前打包备份到 `backups/scripts-<时间>.tar.gz`；
+3. 补写缺失的规则文件，刷新 cron 提示词与提案模板；
+4. 保留 `manager-config.yaml`（`--force-config` 才覆盖）；
+5. 同步 venv 依赖，默认跑一次盘点（`--no-scan` 跳过）；
+6. 重新渲染 systemd 单元、重启服务，并请求 `/api/health` 验证。
+
+参数：`--pull`、`--no-scan`、`--force-config`、`--port N`、`--no-restart`、`--check`（只读检查安装状态）。
+
+健康检查失败时会打印回退方式：`git log --oneline -5` 找到上一个提交，`git checkout <commit>` 后重新运行 `update.sh`。
 
 ## 6. 卸载
 
 ```bash
-sudo bash uninstall.sh           # 停服务、删单元，保留全部数据
-sudo bash uninstall.sh --purge   # 连数据目录一起删除（需二次确认）
+sudo bash uninstall.sh           # 停服务、删单元、删仓库内 .venv，保留全部数据
+sudo bash uninstall.sh --purge   # 连数据目录一起删除（需输入 PURGE 确认，或加 --yes）
 ```
 
-定时任务属于 Hermes 侧配置，卸载脚本不会自动删除；需要时用 `hermes cron list` 查看并 `hermes cron remove`。
+默认保留 `~/.hermes/skill-management` 与 `~/.hermes/skill-dashboard-data`，打印路径供你决定。`--purge` 前会校验两个目录都在 `~/.hermes` 之下，拒绝删除 `/` 或家目录。`--keep-venv` 保留仓库内环境，`--no-systemd` 仅用于演练。
+
+卸载不会删除仓库目录本身，也不碰 Hermes 全局配置和 cron 任务；定时任务用 `hermes cron list` 查看、`hermes cron remove` 删除。
 
 ## 常见问题
 

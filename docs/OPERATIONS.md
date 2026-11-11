@@ -71,7 +71,7 @@ python3 scripts/compare_inventory.py --new registry/skills.json
 
 ## 5. 定时任务（可选）
 
-安装时加 `--with-cron`，或手动参考 `pipeline/config/cron-prompts/` 创建。任务默认只投递到本地（`--deliver local`），不会外发。检查运行情况：
+安装脚本不创建定时任务；需要时按 `pipeline/config/cron-prompts/` 里的六份提示词在 Hermes 侧手动创建。任务默认只投递到本地（`--deliver local`），不会外发。检查运行情况：
 
 ```bash
 hermes cron list
@@ -81,7 +81,7 @@ hermes cron runs <name>
 ## 6. 更新与日志
 
 ```bash
-cd "$KIT" && sudo bash update.sh
+cd "$KIT" && sudo bash update.sh --pull
 journalctl -u hermes-skill-dashboard -f
 tail -f "$SKM/logs/scan-log.md"
 ```

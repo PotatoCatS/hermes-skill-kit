@@ -47,9 +47,11 @@ bash install.sh --check               # 只读自检，不改任何文件
 更新与卸载：
 
 ```bash
-cd ~/.hermes/skill-kit && sudo bash update.sh
-sudo bash uninstall.sh           # 停服务，保留数据
-sudo bash uninstall.sh --purge   # 连数据一起删除（会二次确认）
+cd ~/.hermes/skill-kit
+git pull --ff-only                     # 或 sudo bash update.sh --pull
+sudo bash update.sh                    # 同步脚本/规则/依赖，重启服务并做健康检查
+sudo bash uninstall.sh                 # 停服务，保留数据
+sudo bash uninstall.sh --purge         # 连数据一起删除（会二次确认）
 ```
 
 ## 数据放在哪里
