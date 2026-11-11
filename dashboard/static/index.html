@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="no-referrer">
+<title>Hermes Skill 控制台</title>
+<link rel="stylesheet" href="/static/style.css?v=20261110c">
+</head>
+<body>
+<a class="skip" href="#main">跳到主内容</a>
+<div id="auth-gate" class="auth-gate hidden" aria-live="polite">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="logo">H</div>
+      <div>
+        <h2>Hermes Skill 控制台</h2>
+        <p>仅限本机管理访问</p>
+      </div>
+    </div>
+    <div id="auth-body"><div class="loading">检查会话…</div></div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">H</div>
+    <div>
+      <h1>Hermes Skill 控制台</h1>
+      <p id="subtitle">本地管理 · 审批中心可写 · 数据来自 skill-management</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="authbox hidden" id="authbox">
+      <span class="who" id="auth-user">admin</span>
+      <button class="ghost small" id="logout-btn">退出</button>
+    </div>
+    <div class="health" id="health"><span class="dot"></span><span>连接中…</span></div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-view="dashboard" class="active">仪表盘</button>
+  <button data-view="skills">技能清单</button>
+  <button data-view="reports">报告</button>
+  <button data-view="audits">审计</button>
+  <button data-view="proposals">审批中心</button>
+</nav>
+
+<main id="main">
+  <section id="view-dashboard" class="view active">
+    <div class="loading">加载中…</div>
+  </section>
+
+  <section id="view-skills" class="view">
+    <div class="toolbar">
+      <input id="skill-q" type="search" placeholder="搜索名称 / 描述 / 标签" autocomplete="off">
+      <label class="filter"><span>分类</span><select id="skill-category"><option value="">全部</option></select></label>
+      <label class="filter"><span>状态</span><select id="skill-status"><option value="">全部</option></select></label>
+      <label class="filter"><span>来源</span><select id="skill-source"><option value="">全部</option></select></label>
+      <label class="filter"><span>产生方式</span><select id="skill-origin"><option value="">全部</option></select></label>
+      <button id="skill-reset" class="ghost">重置</button>
+    </div>
+    <div class="panel">
+      <table class="table" id="skill-table">
+        <thead>
+          <tr>
+            <th data-sort="name">名称</th>
+            <th>简介</th>
+            <th data-sort="category">分类</th>
+            <th>版本</th>
+            <th data-sort="source_type">来源</th>
+            <th data-sort="origin">产生方式</th>
+            <th data-sort="load_status">状态</th>
+            <th data-sort="total_bytes">大小</th>
+          </tr>
+        </thead>
+        <tbody><tr><td colspan="8" class="muted">加载中…</td></tr></tbody>
+      </table>
+      <div class="pager">
+        <span id="skill-count" class="muted"></span>
+        <div class="pager-btns">
+          <button id="skill-prev" class="ghost">上一页</button>
+          <span id="skill-page"></span>
+          <button id="skill-next" class="ghost">下一页</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-reports" class="view">
+    <div class="toolbar" id="report-kinds">
+      <button data-kind="daily" class="chip active">日报</button>
+      <button data-kind="weekly" class="chip">周报</button>
+      <button data-kind="monthly" class="chip">月报</button>
+      <button data-kind="compare" class="chip">盘点对比</button>
+    </div>
+    <div class="split">
+      <aside class="panel list-pane" id="report-list"><div class="muted pad">加载中…</div></aside>
+      <article class="panel doc-pane" id="report-doc"><div class="muted pad">从左侧选择一份报告</div></article>
+    </div>
+  </section>
+
+  <section id="view-audits" class="view">
+    <div class="subtabs" id="audit-tabs">
+      <button data-tab="overview" class="active">概览</button>
+      <button data-tab="quality">质量</button>
+      <button data-tab="security">安全</button>
+      <button data-tab="duplication">重复</button>
+      <button data-tab="updates">更新</button>
+      <button data-tab="history">历史对比</button>
+      <button data-tab="reports">原始报告</button>
+    </div>
+    <div id="audit-body"><div class="loading">加载中…</div></div>
+  </section>
+
+  <section id="view-proposals" class="view">
+    <div class="stat-row" id="approval-stats"></div>
+    <div class="subtabs" id="approval-tabs">
+      <button data-tab="pending" class="active">待审批</button>
+      <button data-tab="approved">已批准</button>
+      <button data-tab="rejected">已拒绝</button>
+      <button data-tab="changes">变更与备份</button>
+      <button data-tab="logs">操作日志</button>
+    </div>
+    <div id="approval-body"><div class="loading">加载中…</div></div>
+    <p class="footnote">批准会与当前改动差异的 SHA-256 绑定；执行复用现有的「备份 → 应用 → 验证 → 回滚」管线，正式执行前必须先通过预检。提案原文仍由命令行或模板生成。</p>
+  </section>
+</main>
+
+<div id="modal" class="modal hidden" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title">确认</h2>
+      <button class="ghost small" data-close>关闭</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot" id="modal-foot"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<div id="drawer" class="drawer hidden" aria-hidden="true">
+  <div class="drawer-backdrop" data-close></div>
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="drawer-head">
+      <h2 id="drawer-title">技能详情</h2>
+      <button class="ghost" data-close>关闭</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+</div>
+
+<script src="/static/desc-zh.js?v=20261110c"></script>
+<script src="/static/app.js?v=20261110c"></script>
+</body>
+</html>

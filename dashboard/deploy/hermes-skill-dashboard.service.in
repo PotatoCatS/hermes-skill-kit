@@ -1,0 +1,25 @@
+[Unit]
+Description=Hermes Skill Dashboard (local approval center)
+After=local-fs.target
+ConditionPathExists=@VENV@/bin/uvicorn
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=@USER@
+WorkingDirectory=@REPO@/dashboard
+Environment=PYTHONUNBUFFERED=1
+Environment=SKD_HERMES_HOME=@HERMES_HOME@
+Environment=SKD_BASE_DIR=@BASE_DIR@
+Environment=SKD_CONFIG_DIR=@CONFIG_DIR@
+Environment=SKD_DATA_DIR=@DATA_DIR@
+ExecStart=@VENV@/bin/uvicorn app.main:app --host 127.0.0.1 --port @PORT@ --log-level info
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

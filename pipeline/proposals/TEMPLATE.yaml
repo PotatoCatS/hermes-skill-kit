@@ -1,0 +1,77 @@
+# SKM proposal template — copy to proposals/pending/SKM-P-YYYYMMDD-NNN.yaml
+# Default: one proposal = one skill. Multi-skill proposals require
+# multi_skill_justification, and their approval_quote must name every touched
+# skill. Never approve a diff you have not read.
+# Validate with: python3 scripts/proposal_lint.py <this file>
+
+proposal_id: SKM-P-YYYYMMDD-NNN
+created_at: YYYY-MM-DDTHH:MM:SS+08:00
+author: skill-agent
+priority: P1                    # P0 security / P1 correctness / P2 quality
+
+target_skill: skill-name
+target_files:
+  - skills/path/to/skill/SKILL.md
+
+# Optional: REQUIRED when target_files touch more than one skill. Explain why
+# the change cannot be split into per-skill proposals.
+multi_skill_justification: null
+
+# SHA-256 of every target file immediately before the proposed change.
+baseline_sha256:
+  skills/path/to/skill/SKILL.md: "<64 lowercase hex characters>"
+
+problem: |
+  What is wrong today, and what breaks or misleads because of it.
+
+evidence:
+  - "SKILL.md#L12: <verbatim quote>"
+  - "report or command output that proves the point"
+
+proposed_changes: |
+  What will change, and why this shape. Name what will NOT change.
+
+# Unified diff relative to the Hermes home (~/.hermes); paths start with a/ and b/.
+# Regenerate and re-approve if this changes after approval: approval binds the
+# exact diff through approved_diff_sha256.
+diff: |
+  --- a/skills/path/to/skill/SKILL.md
+  +++ b/skills/path/to/skill/SKILL.md
+  @@ -1,3 +1,3 @@
+  -old line
+  +new line
+
+expected_benefit: |
+  The user-visible or maintenance benefit.
+
+regression_risk: |
+  - Risk -> mitigation.
+  - Anything unverified and how it will be checked.
+
+verification_plan:
+  - structural          # frontmatter, description <=60, references, encoding
+  - diff_scope          # only target_files
+  - post_hash
+  - manual_check: "<what the user should eyeball after apply>"
+
+backup_plan: |
+  backups/<change_id>/ holds a full copy of every target file plus MANIFEST.json
+  and ROLLBACK.md. Backup completes before any write.
+
+rollback_plan: |
+  python3 scripts/rollback_change.py <change_id>
+  # Rollback restores only target_files; protected files (registry/config/cron)
+  # are hash-checked and only warned about, never restored.
+
+approval_status: pending        # pending | approved | rejected
+approved_by: null
+approved_at: null
+# user's approval sentence: must contain 批准 + the proposal_id, must NOT
+# contain 不批准/不予批准/拒绝/驳回; multi-skill approvals must also name
+# every touched skill. Rejected/pending proposals leave this null.
+approval_quote: null
+# Required before approval_status becomes approved. Compute with:
+#   python3 scripts/proposal_lint.py <this file> --print-diff-sha256
+approved_diff_sha256: null
+change_id: null                 # assigned at apply time: SKM-C-YYYYMMDD-NNN
+result: null                    # applied | rolled_back | failed

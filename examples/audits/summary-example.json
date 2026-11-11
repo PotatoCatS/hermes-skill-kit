@@ -1,0 +1,68 @@
+{
+  "audit_date": "2026-01-02",
+  "generated_at": "2026-01-02T02:00:00Z",
+  "baseline": {
+    "registry": "~/.hermes/skill-management/registry/skills.json",
+    "scan_time": "2026-01-02T01:00:00Z",
+    "skill_count": 3
+  },
+  "scope": {
+    "total": 3,
+    "by_source": {
+      "builtin": 1,
+      "local": 2,
+      "builtin-shadow": 0
+    },
+    "gated_by_platform": 0
+  },
+  "reports": {
+    "quality": {
+      "path": "~/.hermes/skill-management/audits/quality/2026-01-02-quality-report.md",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 1200
+    },
+    "security": {
+      "path": "~/.hermes/skill-management/audits/security/2026-01-02-security-report.md",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "bytes": 900
+    },
+    "duplication": {
+      "path": "~/.hermes/skill-management/audits/duplication/2026-01-02-duplication-report.md",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "bytes": 700
+    },
+    "updates": {
+      "path": "~/.hermes/skill-management/audits/updates/2026-01-02-updates-report.md",
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "bytes": 600
+    }
+  },
+  "totals": {
+    "quality": {
+      "average": 85.33,
+      "grades": {
+        "A": 1,
+        "B": 1,
+        "C": 1
+      }
+    },
+    "security": {
+      "levels": {
+        "Low": 2,
+        "Medium": 1
+      }
+    },
+    "updates": {
+      "conclusions": {
+        "已确认": 1,
+        "未知": 2,
+        "不适用": 0
+      }
+    },
+    "duplication": {
+      "levels": {
+        "Independent": 3
+      }
+    }
+  }
+}

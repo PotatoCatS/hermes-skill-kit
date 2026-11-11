@@ -1,0 +1,34 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Runtime state of the dashboard (never publish)
+/dashboard/config/
+/dashboard/data/
+/dashboard/logs/
+/dashboard/backups/
+dashboard/config/admin.json
+dashboard/config/session.key
+
+# Runtime data of the pipeline (never publish)
+/pipeline/registry/
+/pipeline/reports/
+/pipeline/audits/
+/pipeline/logs/
+/pipeline/backups/
+/pipeline/config/manager-config.yaml
+/pipeline/proposals/pending/*
+/pipeline/proposals/approved/*
+/pipeline/proposals/rejected/*
+!/pipeline/proposals/pending/.gitkeep
+!/pipeline/proposals/approved/.gitkeep
+!/pipeline/proposals/rejected/.gitkeep
+
+# Local environment
+.env
+.env.*
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

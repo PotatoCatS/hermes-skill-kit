@@ -1,0 +1,68 @@
+# ============================================================
+# Hermes Skill Lifecycle Manager — 管理配置模板
+# 由 install.sh 渲染为 config/manager-config.yaml
+#
+# 说明:
+#   - 本文件只描述"管理系统自身"的行为，绝不修改 Hermes 全局配置。
+#   - @占位@ 会在安装时替换为目标机的真实路径与用户名。
+#   - 安全开关见 safety 段，任何情况下不得关闭。
+# ============================================================
+
+manager:
+  name: Hermes Skill Lifecycle Manager
+  version: "1.0"
+  base_dir: @BASE_DIR@
+  owner: @OWNER@
+  mode: stage-gated              # 阶段闸门制：提案 → 批准 → 执行 → 验收
+
+hermes:
+  home: @HERMES_HOME@
+  skills_dir: @SKILLS_DIR@                        # 用户技能目录（盘点主对象）
+  bundled_skills_dir: @BUNDLED_SKILLS_DIR@        # 内置技能源（只读参考）
+  config_path: @CONFIG_PATH@                      # 只读，禁止修改
+  skills_loader_source: @LOADER_SOURCE@           # 加载逻辑证据，只读
+  curator: delegated            # 归档职责由内置 Curator 承担，本系统不越权
+
+scan:
+  target: @SKILLS_DIR@
+  read_only: true
+  depth: 2
+  inventory_cache: registry/skill-inventory.json
+
+registry:
+  inventory: registry/skill-inventory.json
+  category_rules: config/category-rules.md
+
+reports:
+  daily: reports/daily
+  weekly: reports/weekly
+  monthly: reports/monthly
+
+audits:
+  quality: audits/quality
+  security: audits/security
+  duplication: audits/duplication
+  updates: audits/updates
+  quality_rules: config/audit-rules.md
+  security_rules: config/security-rules.md
+
+proposals:
+  pending: proposals/pending
+  approved: proposals/approved
+  rejected: proposals/rejected
+
+maintenance:
+  backups: backups
+  max_backups: 10
+
+logs:
+  scan: logs/scan-log.md
+  change: logs/change-log.md
+  error: logs/error-log.md
+
+safety:
+  read_only_original_skills: true    # 原始 Skill 默认只读，变更须用户逐项批准
+  untrusted_skill_content: true      # 被扫描内容视为不可信数据
+  never_execute_skill_scripts: true  # 禁止执行扫描对象中的脚本
+  never_read_secrets: true           # 不读取 .env 等真实密钥
+  require_user_approval: true        # 对原始 Skill/全局配置的任何变更须用户明确批准

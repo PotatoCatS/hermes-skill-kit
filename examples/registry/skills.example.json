@@ -1,0 +1,124 @@
+{
+  "scan_meta": {
+    "generator": "scan_skills.py (SKM)",
+    "generator_version": "1.1.0",
+    "scanned_at": "2026-01-01T00:00:00Z",
+    "scanned_by": "example",
+    "roots": {
+      "default_skills_dir": {
+        "path": "~/.hermes/skills",
+        "status": "present",
+        "skill_count": 3
+      },
+      "external_dirs": {
+        "status": "not_configured"
+      },
+      "curator_archive": {
+        "path": "~/.hermes/skills/.archive",
+        "status": "absent",
+        "archived_skill_count": 0
+      },
+      "extra_dirs": []
+    }
+  },
+  "skills": {
+    "~/.hermes/skills/note-taking/demo-notes": {
+      "name": "demo-notes",
+      "description": "Example skill: capture and search local notes.",
+      "version": "1.0.0",
+      "category": "note-taking",
+      "tags": ["Notes", "Search"],
+      "path": "~/.hermes/skills/note-taking/demo-notes",
+      "relative_path": "note-taking/demo-notes",
+      "source": "~/.hermes/skills",
+      "source_type": "local",
+      "load_status": "confirmed",
+      "platforms": ["linux", "macos", "windows"],
+      "requires_toolsets": [],
+      "related_skills": [],
+      "author": "Example Author",
+      "license": "MIT",
+      "dependencies": [],
+      "file_count": 1,
+      "total_bytes": 2048,
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "bytes": 2048
+        }
+      ],
+      "last_scanned": "2026-01-01T00:00:00Z",
+      "quality_score": 88,
+      "security_level": "Low",
+      "update_status": "unknown"
+    },
+    "~/.hermes/skills/devops/demo-deploy": {
+      "name": "demo-deploy",
+      "description": "Example skill: stage and verify a small web deploy.",
+      "version": "0.2.0",
+      "category": "devops",
+      "tags": ["Deploy", "Verification"],
+      "path": "~/.hermes/skills/devops/demo-deploy",
+      "relative_path": "devops/demo-deploy",
+      "source": "~/.hermes/skills",
+      "source_type": "local",
+      "load_status": "confirmed",
+      "platforms": ["linux", "macos", "windows"],
+      "requires_toolsets": [],
+      "related_skills": [],
+      "author": "Example Author",
+      "license": "MIT",
+      "dependencies": [],
+      "file_count": 1,
+      "total_bytes": 3072,
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "bytes": 3072
+        }
+      ],
+      "last_scanned": "2026-01-01T00:00:00Z",
+      "quality_score": 76,
+      "security_level": "Medium",
+      "update_status": "unknown"
+    },
+    "~/.hermes/skills/productivity/demo-report": {
+      "name": "demo-report",
+      "description": "Example bundled skill: turn notes into a short report.",
+      "version": "1.1.0",
+      "category": "productivity",
+      "tags": ["Reports", "Writing"],
+      "path": "~/.hermes/skills/productivity/demo-report",
+      "relative_path": "productivity/demo-report",
+      "source": "~/.hermes/skills",
+      "source_type": "builtin",
+      "load_status": "confirmed",
+      "platforms": ["linux", "macos", "windows"],
+      "requires_toolsets": [],
+      "related_skills": [],
+      "author": "Example Author",
+      "license": "MIT",
+      "dependencies": [],
+      "file_count": 1,
+      "total_bytes": 4096,
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+          "bytes": 4096
+        }
+      ],
+      "last_scanned": "2026-01-01T00:00:00Z",
+      "quality_score": 92,
+      "security_level": "Low",
+      "update_status": "confirmed"
+    }
+  },
+  "errors": [],
+  "name_collisions": []
+}

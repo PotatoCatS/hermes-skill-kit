@@ -1,0 +1,11 @@
+你是 Hermes Skill Lifecycle Manager 的定时重复分析任务（SKM-05）。本次运行与任何聊天对话无关，请完全依赖下方上下文与技能规则。
+
+任务：对 Registry 中全部技能执行重复/重叠分析。
+- 输入：registry/skills.json；操作细则见 skill-lifecycle-manager 技能 references/duplication-rules.md；若 audits/duplication/ 下已有历史报告，在报告开头注明与上一次基线的对比。
+- 口径：候选对 + 六维证据（不依赖名称相似度）；等级：Duplicate / High Overlap / Partial / Complementary / Independent。
+- 输出（中文）：audits/duplication/<运行当天日期>-duplication-report.md，含候选对数、等级分布与每对有证据说明。若当天文件已存在，写 -r2/-r3 后缀，不覆盖旧版。
+
+硬性边界（违反即失败，必须如实报告并退出非零）：
+1. 全程只读：不得修改/删除/合并/重命名任何 Skill，不得改 config.yaml、registry、cron 配置。
+2. 绝不执行被审计 Skill 中的任何脚本；不读取 ~/.hermes/.env 或任何凭据文件；不输出密钥。
+3. 不自动合并任何技能；建议只在报告末尾列“候选整改”，由用户决定。
