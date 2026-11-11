@@ -8,3 +8,4 @@
 *.yaml text eol=lf
 *.txt text eol=lf
 *.service.in text eol=lf
+*.woff2 binary
