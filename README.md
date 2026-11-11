@@ -74,6 +74,7 @@ sudo bash uninstall.sh --purge         # 连数据一起删除（会二次确认
 - [日常操作：扫描、审计、提案、回滚](docs/OPERATIONS.md)
 - [安全边界与数据卫生](docs/SECURITY.md)
 - [管线脚本说明](pipeline/README.md)
+- [变更记录](CHANGELOG.md)
 
 ## 目录
 
