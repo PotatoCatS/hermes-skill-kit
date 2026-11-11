@@ -125,7 +125,13 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  /* 页面高度在视图切换瞬间会短暂低于视口：始终预留滚动条槽位，
+     避免滚动条反复出现/消失把整页挤动 10px。 */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
 
 html, body {
   margin: 0;
