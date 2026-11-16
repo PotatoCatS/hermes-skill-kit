@@ -379,3 +379,110 @@ hermes cron list        # 如有相关任务，逐个 remove
 - [ ] 如启用 cron，已确认辅助技能与脚本就位
 
 全部勾选后，在项目笔记里记录：部署日期、目标机名、仓库版本、端口、Hermes 用户。以后升级或排障都以此为准。
+
+---
+
+## 14. 从旧版内联实例迁移（遗留部署）
+
+安装器只创建「代码与数据分离」的标准布局。更早的手工部署曾把看板直接放进 `~/.hermes/skill-dashboard`，代码、登录配置（`config/`）和常用列表（`data/`）混在同一目录，systemd 单元以 `User=root` 直接指过去。**本仓库不创建、不检查也不承诺兼容这种布局**，新机器按第 1–13 节安装即可，不需要读这一节。
+
+### 14.1 识别遗留实例
+
+同时出现以下特征，基本可以确认：
+
+```bash
+systemctl cat hermes-skill-dashboard | grep -E 'User=|WorkingDirectory=|SKD_'
+```
+
+- `User=root`，`WorkingDirectory=/root/.hermes/skill-dashboard`（或你自己的 home 下同名目录）；
+- 单元里没有任何 `SKD_*` 环境变量；
+- `admin.json`、`session.key` 在代码目录的 `config/` 里，`skill-favorites.json`、`skill-origins.json` 在代码目录的 `data/` 里；
+- 用 `git pull` 更新这个目录会影响运行中的状态文件。
+
+### 14.2 迁移前备份
+
+```bash
+tar -czf skm-legacy-$(date +%Y%m%d).tgz \
+  -C ~/.hermes skill-dashboard skill-management
+```
+
+这个包包含登录配置与会话密钥，按凭据保管，不要放进仓库或公开位置。
+
+### 14.3 迁移步骤
+
+新旧实例默认使用同一个 systemd 单元名（`hermes-skill-dashboard`）和同一个端口，不能长期并排运行，所以按「备份 → 停旧 → 装新 → 验证」的顺序切换。第 14.2 节的备份没做完不要继续。
+
+1. **停旧服务，保留单元副本**：
+
+   ```bash
+   sudo cp /etc/systemd/system/hermes-skill-dashboard.service \
+     /var/backups/hermes-skill-dashboard.legacy.service
+   sudo systemctl disable --now hermes-skill-dashboard
+   ```
+
+2. **克隆仓库**到标准位置（旧代码目录保持原样，便于回退）：
+
+   ```bash
+   git clone https://github.com/PotatoCatS/hermes-skill-kit.git ~/.hermes/skill-kit
+   ```
+
+3. **搬状态文件**。目标是 `~/.hermes/skill-dashboard-data/`：
+
+   ```bash
+   install -d -m 0700 ~/.hermes/skill-dashboard-data/config ~/.hermes/skill-dashboard-data/data
+   cp ~/.hermes/skill-dashboard/config/admin.json ~/.hermes/skill-dashboard-data/config/
+   cp ~/.hermes/skill-dashboard/config/session.key ~/.hermes/skill-dashboard-data/config/
+   cp ~/.hermes/skill-dashboard/data/skill-favorites.json ~/.hermes/skill-dashboard-data/data/ 2>/dev/null || true
+   cp ~/.hermes/skill-dashboard/data/skill-origins.json ~/.hermes/skill-dashboard-data/data/ 2>/dev/null || true
+   chmod 0600 ~/.hermes/skill-dashboard-data/config/*
+   ```
+
+   搬了 `admin.json` 和 `session.key` 就保留原密码与现有登录；只想重设密码的话跳过这两个文件，首次访问会重新引导设置。管线数据（`~/.hermes/skill-management`）路径不变，无需搬动。
+
+4. **按标准布局安装**。安装器会覆盖同名旧单元（原单元已在第 1 步备份），末尾把数据目录和 `.venv` 的属主改为执行 `sudo` 的用户（`SUDO_USER`）：
+
+   ```bash
+   cd ~/.hermes/skill-kit
+   sudo bash install.sh --port 8000
+   ```
+
+5. **验收**。浏览器打开 `http://localhost:8000`，确认：能登录（或按提示重设密码）、技能条数与原实例一致、常用列表还在。在 WSL 内也可以：
+
+   ```bash
+   curl -s http://127.0.0.1:8000/api/health
+   systemctl status hermes-skill-dashboard --no-pager
+   ```
+
+   任何一项不对，按 14.5 回退，不要继续删文件。
+
+6. **确认无误后再删旧代码目录**：
+
+   ```bash
+   rm -rf ~/.hermes/skill-dashboard      # 删除前确认第 14.2 节的备份包可解压
+   ```
+
+   旧目录里的 `config/`、`data/` 已复制到新位置；`registry/` 等若曾在旧目录下，确认 `~/.hermes/skill-management/registry/` 已是新的盘点结果（第 4 步安装会跑一次盘点）。
+
+> 想先看新版本再切换的话，可以用独立单元名和端口装一份临时实例：`sudo SKD_SERVICE_NAME=hermes-skill-dashboard-new bash install.sh --port 8011`。验收完 `sudo systemctl disable --now hermes-skill-dashboard-new` 并删除 `/etc/systemd/system/hermes-skill-dashboard-new.service`，再回到第 1 步做正式切换。临时实例与旧实例共用 `~/.hermes/skill-management`，同一时间只让一个服务在跑。
+
+### 14.4 Hermes 本身以 root 运行时
+
+标准布局假设 `~/.hermes` 属于执行安装的用户。如果 Hermes 就装在 `/root/.hermes`（例如 gateway 以 root 常驻），普通用户读不到该目录，服务也无法以非 root 身份盘点技能。这种情况下：
+
+- 不要用 `sudo bash install.sh`（它会按 `SUDO_USER` 的 home 找 Hermes）；
+- 以 root 身份执行 `HERMES_HOME=/root/.hermes bash install.sh`，数据目录随之落在 `/root/.hermes` 下；
+- 单元仍会是 `User=root`，隔离收益只在「状态文件不再混在代码目录」，其余安全边界不变；
+- 想把服务降为非 root，需要先把整个 Hermes home 迁到普通用户并重新初始化 gateway，这超出本手册范围，不要顺手做。
+
+### 14.5 回退
+
+旧单元备份在 `/var/backups/hermes-skill-dashboard.legacy.service`，旧数据在迁移前的 `skm-legacy-*.tgz` 里：
+
+```bash
+sudo systemctl disable --now hermes-skill-dashboard
+sudo cp /var/backups/hermes-skill-dashboard.legacy.service /etc/systemd/system/hermes-skill-dashboard.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now hermes-skill-dashboard
+```
+
+必要时把备份包解压回 `~/.hermes/`，覆盖被迁移的目录。回退前先停新服务，避免两份数据同时被写。
